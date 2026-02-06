@@ -1,7 +1,7 @@
 # SSRFGuard
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/DaniilVdovin/SSRFGuard/blob/main/README.md)
-[![ru](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/DaniilVdovin/SSRFGuard/blob/main/README-RU.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/DaniilVdovin/SSRFGuard/blob/master/README.md)
+[![ru](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/DaniilVdovin/SSRFGuard/blob/master/README-RU.md)
 
 Легкая защита от SSRF (подделки запросов на стороне сервера) для HttpClient в микросервисах .NET.
 
