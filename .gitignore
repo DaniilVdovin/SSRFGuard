@@ -1,0 +1,21 @@
+# .NET
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+.vs/
+.vscode/
+*.user
+*.suo
+*.cache
+*.log
+
+# Test results
+TestResults/
+*.trx
+*.xml
+
+# OS
+.DS_Store
+Thumbs.db
