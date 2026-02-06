@@ -22,11 +22,6 @@ SSRFGuard blocks dangerous requests before they leave your service.
 - 📋 Domain whitelist with wildcard support (*.trusted.com)
 - 🔄 Works as wrapper, DI service, or DelegatingHandler
 
-## Installation
-```bash
-  dotnet add package SSRFGuard
-```
-
 ## Usage
 ### Option 1: Simple wrapper (quick start)
 ```csharp
