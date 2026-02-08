@@ -37,7 +37,7 @@ var client = new SafeHttpClient(options);
 var response = await client.GetAsync("https://api.example.com/data");
 ```
 ### Option 2: Dependency Injection (recommended)
-```charp
+```csharp
 // Program.cs
 builder.Services.AddSsrfGuard(options =>
 {
