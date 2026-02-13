@@ -50,6 +50,69 @@ public class UrlValidator
             if (IsReservedIpAddress(ip))
                 throw new SsrfValidationException(url, $"Reserved IP address '{ip}' is not allowed");
         }
+
+        // Валидация порта
+        ValidatePort(uri, url);
+    }
+    
+    private void ValidatePort(Uri uri, string url)
+    {
+        // Порт -1 означает, что порт не указан явно в URL
+        int port = uri.Port;
+        
+        // Если порт не указан, используем стандартный порт для схемы
+        if (port == -1 && _options.StandardPorts.TryGetValue(uri.Scheme, out int defaultPort))
+        {
+            port = defaultPort;
+        }
+        
+        // Если порт все еще не определен, пропускаем проверку
+        if (port == -1)
+            return;
+        
+        // Проверяем диапазон портов
+        if (port < _options.MinPort || port > _options.MaxPort)
+            throw new SsrfValidationException(url, $"Port {port} is outside allowed range ({_options.MinPort}-{_options.MaxPort})");
+        
+        // Проверяем белый список портов
+        if (_options.AllowedPorts.Any() && !_options.AllowedPorts.Contains(port))
+            throw new SsrfValidationException(url, $"Port {port} is not in allowed ports list");
+        
+        // Проверяем черный список портов
+        if (_options.BlockedPorts.Contains(port))
+            throw new SsrfValidationException(url, $"Port {port} is explicitly blocked");
+        
+        // Блокируем известные порты внутренних сервисов
+        if (_options.BlockWellKnownServices && IsWellKnownServicePort(port))
+            throw new SsrfValidationException(url, $"Port {port} is a well-known service port and is blocked");
+    }
+    
+    private bool IsWellKnownServicePort(int port)
+    {
+        // Известные порты внутренних сервисов
+        return port switch
+        {
+            22 => true,    // SSH
+            23 => true,    // Telnet
+            25 => true,    // SMTP
+            53 => true,    // DNS
+            110 => true,   // POP3
+            143 => true,   // IMAP
+            389 => true,   // LDAP
+            445 => true,   // SMB
+            636 => true,   // LDAPS
+            1433 => true,  // Microsoft SQL Server
+            1521 => true,  // Oracle Database
+            27017 => true, // MongoDB
+            3306 => true,  // MySQL
+            3389 => true,  // RDP
+            5432 => true,  // PostgreSQL
+            5900 => true,  // VNC
+            6379 => true,  // Redis
+            8080 => false, // HTTP alternative (разрешаем, но можно настроить)
+            8443 => false, // HTTPS alternative (разрешаем, но можно настроить)
+            _ => false
+        };
     }
     
     private bool IsDangerousHostname(string host)
