@@ -1,13 +1,33 @@
+// ============================================================================
+// Author: Daniil Vdovin
+// Project: SSRFGuard
+// Description: Unit tests for URL validator
+// License: MIT License
+// Copyright (c) 2026 Daniil Vdovin
+// ============================================================================
+
 using SSRFGuard;
 using SSRFGuard.Exceptions;
 using Xunit;
 
 namespace SSRFGuard.Tests;
 
+/// <summary>
+/// Unit tests for the <see cref="UrlValidator"/> class.
+/// Tests various scenarios including valid URLs, dangerous URLs,
+/// domain whitelisting, and port validation.
+/// </summary>
 public class UrlValidatorTests
 {
+    /// <summary>
+    /// Default SSRF guard options for testing.
+    /// </summary>
     private readonly SsrfGuardOptions _defaultOptions = new();
 
+    /// <summary>
+    /// Tests that valid URLs pass validation without throwing exceptions.
+    /// </summary>
+    /// <param name="url">The URL to test.</param>
     [Theory]
     [InlineData("http://example.com")]
     [InlineData("https://api.service.com")]
@@ -19,6 +39,11 @@ public class UrlValidatorTests
         validator.Validate(url); // No exception
     }
 
+    /// <summary>
+    /// Tests that dangerous URLs (localhost, private IPs, file protocols)
+    /// throw <see cref="SsrfValidationException"/>.
+    /// </summary>
+    /// <param name="url">The dangerous URL to test.</param>
     [Theory]
     [InlineData("http://localhost")]
     [InlineData("http://localhost:8080")]
@@ -36,6 +61,10 @@ public class UrlValidatorTests
         Assert.Throws<SsrfValidationException>(() => validator.Validate(url));
     }
 
+    /// <summary>
+    /// Tests that domain whitelisting works correctly with exact matches
+    /// and wildcard patterns.
+    /// </summary>
     [Fact]
     public void AllowedDomains_ShouldWork()
     {
@@ -52,6 +81,10 @@ public class UrlValidatorTests
             validator.Validate("https://evil.com"));
     }
 
+    /// <summary>
+    /// Tests that well-known service ports are blocked by default.
+    /// </summary>
+    /// <param name="url">The URL with a blocked service port.</param>
     [Theory]
     [InlineData("http://example.com:22")]
     [InlineData("http://example.com:23")]
@@ -67,6 +100,11 @@ public class UrlValidatorTests
         Assert.Throws<SsrfValidationException>(() => validator.Validate(url));
     }
 
+    /// <summary>
+    /// Tests that alternative HTTP/HTTPS ports are allowed by default
+    /// when they are not in the blocked service ports list.
+    /// </summary>
+    /// <param name="url">The URL with an alternative port.</param>
     [Theory]
     [InlineData("http://example.com:8080")]
     [InlineData("https://example.com:8443")]
@@ -76,6 +114,10 @@ public class UrlValidatorTests
         validator.Validate(url); // Should pass by default
     }
 
+    /// <summary>
+    /// Tests that port whitelisting works correctly.
+    /// Only ports in the whitelist should be allowed.
+    /// </summary>
     [Fact]
     public void AllowedPorts_Whitelist_ShouldWork()
     {
@@ -93,6 +135,10 @@ public class UrlValidatorTests
             validator.Validate("http://example.com:3306"));
     }
 
+    /// <summary>
+    /// Tests that port blacklisting works correctly.
+    /// Ports in the blacklist should be blocked.
+    /// </summary>
     [Fact]
     public void BlockedPorts_Blacklist_ShouldWork()
     {
@@ -109,6 +155,10 @@ public class UrlValidatorTests
         validator.Validate("http://example.com:80"); // OK
     }
 
+    /// <summary>
+    /// Tests that custom port range validation works correctly.
+    /// Ports outside the specified range should be blocked.
+    /// </summary>
     [Fact]
     public void PortRange_ShouldBeValidated()
     {
@@ -126,6 +176,10 @@ public class UrlValidatorTests
         validator.Validate("http://example.com:15000"); // OK - within range
     }
 
+    /// <summary>
+    /// Tests that non-standard ports for schemes are allowed by default
+    /// when they are not well-known service ports.
+    /// </summary>
     [Fact]
     public void NonStandardPortForScheme_ShouldBeAllowed_ByDefault()
     {
@@ -136,11 +190,14 @@ public class UrlValidatorTests
 
         var validator = new UrlValidator(options);
         
-        // Нестандартные порты разрешены по умолчанию, если они не являются опасными сервисами
+        // Non-standard ports are allowed by default if they are not dangerous services
         validator.Validate("http://example.com:8080"); // Should pass
         validator.Validate("https://example.com:8443"); // Should pass
     }
 
+    /// <summary>
+    /// Tests that non-standard ports are allowed when explicitly added to the whitelist.
+    /// </summary>
     [Fact]
     public void NonStandardPort_ShouldBeAllowed_WhenInWhitelist()
     {
@@ -152,9 +209,12 @@ public class UrlValidatorTests
 
         var validator = new UrlValidator(options);
         
-        validator.Validate("http://example.com:8080"); // OK - в белом списке
+        validator.Validate("http://example.com:8080"); // OK - in whitelist
     }
 
+    /// <summary>
+    /// Tests that disabling well-known services blocking allows all ports.
+    /// </summary>
     [Fact]
     public void DisableWellKnownServicesBlock_ShouldAllowAllPorts()
     {
@@ -165,7 +225,7 @@ public class UrlValidatorTests
 
         var validator = new UrlValidator(options);
         
-        // Даже опасные порты должны проходить, если проверка отключена
+        // Even dangerous ports should pass when the check is disabled
         validator.Validate("http://example.com:3306");
         validator.Validate("http://example.com:6379");
     }
