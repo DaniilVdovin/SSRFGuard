@@ -1,7 +1,9 @@
 # SSRFGuard
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/DaniilVdovin/SSRFGuard/blob/main/README.md)
-[![ru](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/DaniilVdovin/SSRFGuard/blob/main/README-RU.md)
+<img src="/baner.png"></img>
+
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/DaniilVdovin/SSRFGuard/blob/master/README.md)
+[![ru](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/DaniilVdovin/SSRFGuard/blob/master/README-RU.md)
 
 Легкая защита от SSRF (подделки запросов на стороне сервера) для HttpClient в микросервисах .NET.
 
@@ -24,11 +26,6 @@ SSRFGuard блокирует опасные запросы до того, как
 - 🔄 Работает как оболочка, сервис внедрения зависимостей или DelegatingHandler
 - 🚪 Валидация портов с поддержкой белого/черного списков (Задача 7)
 - ⚠️ Блокирует 20+ опасных сервисных портов по умолчанию (Задача 7)
-
-## Установка
-```bash
-  dotnet add package SSRFGuard
-```
 
 ## Использование
 ### Вариант 1. Простая оболочка (для быстрого старта)

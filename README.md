@@ -1,6 +1,9 @@
 # SSRFGuard
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/DaniilVdovin/SSRFGuard/blob/main/README.md)
-[![ru](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/DaniilVdovin/SSRFGuard/blob/main/README-RU.md)
+
+<img src="/baner.png"></img>
+
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/DaniilVdovin/SSRFGuard/blob/master/README.md)
+[![ru](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/DaniilVdovin/SSRFGuard/blob/master/README-RU.md)
 
 Lightweight SSRF (Server-Side Request Forgery) protection for HttpClient in .NET microservices.
 
@@ -23,11 +26,6 @@ SSRFGuard blocks dangerous requests before they leave your service.
 - 🔄 Works as wrapper, DI service, or DelegatingHandler
 - 🚪 Port validation with whitelist/blacklist support (Task 7)
 - ⚠️ Blocks 20+ dangerous service ports by default (Task 7)
-
-## Installation
-```bash
-  dotnet add package SSRFGuard
-```
 
 ## Usage
 ### Option 1: Simple wrapper (quick start)
