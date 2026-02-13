@@ -22,6 +22,8 @@ SSRFGuard блокирует опасные запросы до того, как
 - 🚫 Предотвращает доступ к конечным точкам метаданных (169.254.169.254, 127.0.0.1, localhost)
 - 📋 Белый список доменов с поддержкой подстановочных знаков (*.trusted.com)
 - 🔄 Работает как оболочка, сервис внедрения зависимостей или DelegatingHandler
+- 🚪 Валидация портов с поддержкой белого/черного списков (Задача 7)
+- ⚠️ Блокирует 20+ опасных сервисных портов по умолчанию (Задача 7)
 
 ## Установка
 ```bash
@@ -33,7 +35,12 @@ SSRFGuard блокирует опасные запросы до того, как
 ```csharp
 var options = new SsrfGuardOptions
 {
-    AllowedDomains = new HashSet<string> { "api.example.com", "*.trusted.com" }
+    AllowedDomains = new HashSet<string> { "api.example.com", "*.trusted.com" },
+    
+    // Валидация портов (Задача 7)
+    AllowedPorts = new HashSet<int> { 80, 443 },
+    BlockedPorts = new HashSet<int> { 22, 3306, 6379 },
+    BlockWellKnownServices = true
 };
 
 var client = new SafeHttpClient(options);
@@ -46,6 +53,11 @@ builder.Services.AddSsrfGuard(options =>
 {
     options.AllowedDomains.Add("api.example.com");
     options.Timeout = TimeSpan.FromSeconds(30);
+    
+    // Валидация портов (Задача 7)
+    options.AllowedPorts = new HashSet<int> { 80, 443 };
+    options.BlockedPorts = new HashSet<int> { 22, 3306, 6379 };
+    options.BlockWellKnownServices = true; // Блокирует 20+ опасных портов по умолчанию
 });
 
 // YourService.cs
@@ -69,6 +81,10 @@ public class MyService
 builder.Services.AddSsrfGuardHttpClient("SafeExternalClient", options =>
 {
     options.AllowedDomains.Add("*.payment-gateway.com");
+    
+    // Валидация портов (Задача 7)
+    options.AllowedPorts = new HashSet<int> { 80, 443 };
+    options.BlockWellKnownServices = true;
 });
 
 // Использование

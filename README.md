@@ -21,6 +21,8 @@ SSRFGuard blocks dangerous requests before they leave your service.
 - 🚫 Prevents metadata endpoint access (169.254.169.254, 127.0.0.1, localhost)
 - 📋 Domain whitelist with wildcard support (*.trusted.com)
 - 🔄 Works as wrapper, DI service, or DelegatingHandler
+- 🚪 Port validation with whitelist/blacklist support (Task 7)
+- ⚠️ Blocks 20+ dangerous service ports by default (Task 7)
 
 ## Installation
 ```bash
@@ -32,19 +34,29 @@ SSRFGuard blocks dangerous requests before they leave your service.
 ```csharp
 var options = new SsrfGuardOptions
 {
-    AllowedDomains = new HashSet<string> { "api.example.com", "*.trusted.com" }
+    AllowedDomains = new HashSet<string> { "api.example.com", "*.trusted.com" },
+    
+    // Port validation (Task 7)
+    AllowedPorts = new HashSet<int> { 80, 443 },
+    BlockedPorts = new HashSet<int> { 22, 3306, 6379 },
+    BlockWellKnownServices = true
 };
 
 var client = new SafeHttpClient(options);
 var response = await client.GetAsync("https://api.example.com/data");
 ```
 ### Option 2: Dependency Injection (recommended)
-```charp
+```csharp
 // Program.cs
 builder.Services.AddSsrfGuard(options =>
 {
     options.AllowedDomains.Add("api.example.com");
     options.Timeout = TimeSpan.FromSeconds(30);
+    
+    // Port validation (Task 7)
+    options.AllowedPorts = new HashSet<int> { 80, 443 };
+    options.BlockedPorts = new HashSet<int> { 22, 3306, 6379 };
+    options.BlockWellKnownServices = true; // Blocks 20+ dangerous ports by default
 });
 
 // YourService.cs
@@ -68,6 +80,10 @@ public class MyService
 builder.Services.AddSsrfGuardHttpClient("SafeExternalClient", options =>
 {
     options.AllowedDomains.Add("*.payment-gateway.com");
+    
+    // Port validation (Task 7)
+    options.AllowedPorts = new HashSet<int> { 80, 443 };
+    options.BlockWellKnownServices = true;
 });
 
 // Usage
