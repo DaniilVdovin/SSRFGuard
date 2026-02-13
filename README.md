@@ -24,8 +24,8 @@ SSRFGuard blocks dangerous requests before they leave your service.
 - 🚫 Prevents metadata endpoint access (169.254.169.254, 127.0.0.1, localhost)
 - 📋 Domain whitelist with wildcard support (*.trusted.com)
 - 🔄 Works as wrapper, DI service, or DelegatingHandler
-- 🚪 Port validation with whitelist/blacklist support (Task 7)
-- ⚠️ Blocks 20+ dangerous service ports by default (Task 7)
+- 🚪 Port validation with whitelist/blacklist support
+- ⚠️ Blocks 20+ dangerous service ports by default
 
 ## Usage
 ### Option 1: Simple wrapper (quick start)
@@ -34,7 +34,7 @@ var options = new SsrfGuardOptions
 {
     AllowedDomains = new HashSet<string> { "api.example.com", "*.trusted.com" },
     
-    // Port validation (Task 7)
+    // Port validation
     AllowedPorts = new HashSet<int> { 80, 443 },
     BlockedPorts = new HashSet<int> { 22, 3306, 6379 },
     BlockWellKnownServices = true
@@ -51,7 +51,7 @@ builder.Services.AddSsrfGuard(options =>
     options.AllowedDomains.Add("api.example.com");
     options.Timeout = TimeSpan.FromSeconds(30);
     
-    // Port validation (Task 7)
+    // Port validation
     options.AllowedPorts = new HashSet<int> { 80, 443 };
     options.BlockedPorts = new HashSet<int> { 22, 3306, 6379 };
     options.BlockWellKnownServices = true; // Blocks 20+ dangerous ports by default
@@ -79,7 +79,7 @@ builder.Services.AddSsrfGuardHttpClient("SafeExternalClient", options =>
 {
     options.AllowedDomains.Add("*.payment-gateway.com");
     
-    // Port validation (Task 7)
+    // Port validation
     options.AllowedPorts = new HashSet<int> { 80, 443 };
     options.BlockWellKnownServices = true;
 });
